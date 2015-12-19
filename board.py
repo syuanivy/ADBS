@@ -37,3 +37,12 @@ class Board:
         if x < 0 or x >= self.xsize or y < 0 or y >= self.ysize:
             raise IndexError("Position is not on board: %s" % ((x, y),))
         return self._grid[x][y]
+
+    def has_ship(self, x, y):
+        return self._grid[x][y] is not None
+
+    def sink_ship(self, x, y):
+        ship = self._grid[x][y]
+        if ship is not None:
+            for x, y in reversed(sorted(ship.get_coordinates())):
+                self._grid[x][y] = None

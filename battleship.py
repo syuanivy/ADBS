@@ -59,33 +59,16 @@ def ship():
 @app.route('/shoot', methods=['GET', 'POST'])
 def shoot():
     """
-    Handle request to send an enemy battleship to a location on the map.
+    Handle request to shoot a ship on the map.
     """
-    try:
-        data = request.get_json()
-        location = data['location']
-        x = location['x']
-        y = location['y']
+    x = int(request.form['x'])
+    y = int(request.form['y'])
 
-    except KeyError:
-        return Error(Error.ERR_OTHER, "Incomplete ship description").create_response()
-    except:
-        return Error(Error.ERR_OTHER).create_response()
-
-    try:
-        print [x, y]
-    except ValueError:
-        return Error(Error.ERR_OTHER, "Invalid ship description").create_response()
-
-    try:
-        for x, y in ship.get_coordinates():
-            if Global.board.query_coordinate(x, y):
-                return Error(Error.ERR_SHIP_COLLIDE).create_response()
-        Global.board.add_ship(ship)
-    except IndexError:
-        return Error(Error.ERR_INVALID_LOC).create_response()
-
-    return make_response("", 200)
+    if Global.board.has_ship(x, y):
+        Global.board.sink_ship(x, y)
+        return make_response("Hit", 200)
+    else:
+        return make_response("Miss", 200)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -94,6 +77,7 @@ def main():
     _init_ships()
     shoot_form = ShootForm(request.form)
     ship_form = ShipForm(request.form)
+    print "Game starts...."
     # print shoot_form.errors
     # print ship_form.errors
     # if request.method == 'POST':
