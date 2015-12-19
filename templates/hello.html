@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>BattleShip App</title>
+ 
+ 
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+ 
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+
+ 
+ 
+</head>
+ 
+<body style=" background: lightblue;">
+ 
+    <div class="container">
+        <div class="header">
+            <h3 class="text-muted">BattleShip Game</h3>
+        </div>
+
+        <canvas id="canvas" width="420px" height="420px" style="background: #fff;magrin:20px;"></canvas>
+        <script type="text/javascript" language="javascript">
+            var bw = 400;
+            var bh = 400;
+            var p = 10;
+
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            function drawBoard(){
+                for (var x = 0; x <= bw; x += 20) {
+                    context.moveTo(0.5 + x + p, p);
+                    context.lineTo(0.5 + x + p, bh + p);
+                }
+
+
+                for (var x = 0; x <= bh; x += 20) {
+                    context.moveTo(p, 0.5 + x + p);
+                    context.lineTo(bw + p, 0.5 + x + p);
+                }
+
+                context.strokeStyle = "black";
+                context.stroke();
+            }
+
+            drawBoard();
+        </script>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message[1] }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <div class = "row">
+            <div class="col-xs-6">
+                <form action="" method="post" name ="shoot">
+                    {{ shoot.csrf }}
+
+                    <div class="input text">
+                        {{ shoot.x.label }} {{ shoot.x }}
+                    </div>
+
+                    <div class="input text">
+                        {{ shoot.y.label }} {{ shoot.y }}
+                    </div>
+
+                    <div class="input submit">
+                        <input type="submit" value="Shoot" />
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="col-xs-6">
+                <form action="" method="post" name = "ship">
+                    {{ ship.csrf }}
+
+                    <div class="input text">
+                        {{ ship.x.label }} {{ ship.x }}
+                    </div>
+
+                    <div class="input text">
+                        {{ ship.y.label }} {{ ship.y }}
+                    </div>
+
+                    <div class="input text">
+                        {{ ship.direction.label }} {{ ship.direction }}
+                    </div>
+
+                    <div class="input text">
+                        {{ ship.length.label }} {{ ship.length }}
+                    </div>
+
+                    <div class="input submit">
+                        <input type="submit" value="Ship" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+ 
+        <footer class="footer">
+            <p>&copy; Shuai Yuan 2015</p>
+        </footer>
+ 
+    </div>
+</body>
+ 
+</html>
