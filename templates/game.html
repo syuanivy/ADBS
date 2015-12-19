@@ -59,7 +59,7 @@
         {% endwith %}
         <div class = "row">
             <div class="col-xs-6">
-                <form action="" method="post" name ="shoot">
+                <form action="/shoot" method="post" name ="shoot">
                     {{ shoot.csrf }}
 
                     <div class="input text">
@@ -78,7 +78,7 @@
             </div>
 
             <div class="col-xs-6">
-                <form action="" method="post" name = "ship">
+                <form action="/ship" method="post" name = "ship">
                     {{ ship.csrf }}
 
                     <div class="input text">
