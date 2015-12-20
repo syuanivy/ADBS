@@ -35,4 +35,3 @@ class Ship:
         else:
             coordinates = [(self.x, y) for y in range((self.y + 1 - self.length), (self.y + 1))]
         return coordinates
-

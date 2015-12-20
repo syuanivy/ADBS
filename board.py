@@ -1,3 +1,4 @@
+from error import Error
 class Board:
     """
     Representation of ships and their positions on a map.
@@ -14,6 +15,7 @@ class Board:
         self.xsize = xsize
         self.ysize = ysize
         self._grid = [[None for y in range(ysize)] for x in range(xsize)]
+        self.numOfShips = 0
 
     def add_ship(self, ship):
         """
@@ -22,9 +24,15 @@ class Board:
         """
         if ship.x < 0 or ship.x >= self.xsize or ship.y < 0 or ship.y >= self.ysize:
             raise IndexError("Ship start position is not on board: %s" % ((ship.x, ship.y),))
+
+        for x,y in ship.get_coordinates():
+            if self.query_coordinate(x, y):
+                raise Error(Error.ERR_SHIP_COLLIDE)
+
         # Start with highest coordinate to get IndexError if out of bounds
         for x, y in reversed(sorted(ship.get_coordinates())):
             self._grid[x][y] = ship
+        self.numOfShips += 1
 
     def query_coordinate(self, x, y):
         """
@@ -46,3 +54,5 @@ class Board:
         if ship is not None:
             for x, y in reversed(sorted(ship.get_coordinates())):
                 self._grid[x][y] = None
+
+            self.numOfShips -= 1

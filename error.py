@@ -1,3 +1,6 @@
+from flask import jsonify
+
+
 class Error:
     """
     Representation of error response from server.

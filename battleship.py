@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import Flask, jsonify, make_response, request, render_template, flash
+from flask import Flask, jsonify, make_response, request, render_template
 from board import Board
 from ship import Ship
 from error import Error
@@ -17,6 +17,7 @@ def _init_board():
 
 def _init_ships():
     """
+    Place ships before the games if needed.
     Initiate the board with two ships for now.
     """
     Global.board.add_ship(Ship(1, 1, 'horizontal', 3))
@@ -29,31 +30,27 @@ def ship():
     Handle request to send an enemy battleship to a location on the map.
     """
     try:
-        data = request.get_json()
-        location = data['location']
-        x = location['x']
-        y = location['y']
-        direction = data['direction']
-        length = data['length']
-    except KeyError:
-        return Error(Error.ERR_OTHER, "Incomplete ship description").create_response()
+        x = int(request.form['x'])
+        y = int(request.form['y'])
+        direction = str(request.form['direction'])
+        length = int(request.form['length'])
+        new_ship = Ship(x, y, direction, length)
+    except ValueError:
+        return Error(Error.ERR_OTHER, "Invalid ship description").create_response()
+    except IndexError:
+        return Error(Error.ERR_INVALID_LOC).create_response()
     except:
         return Error(Error.ERR_OTHER).create_response()
 
-    try:
-        ship = Ship(x, y, direction, length)
-    except ValueError:
-        return Error(Error.ERR_OTHER, "Invalid ship description").create_response()
 
     try:
-        for x, y in ship.get_coordinates():
-            if Global.board.query_coordinate(x, y):
-                return Error(Error.ERR_SHIP_COLLIDE).create_response()
-        Global.board.add_ship(ship)
+        Global.board.add_ship(new_ship)
     except IndexError:
         return Error(Error.ERR_INVALID_LOC).create_response()
+    except Error:
+        return Error(Error.ERR_SHIP_COLLIDE).create_response()
 
-    return make_response("", 200)
+    return make_response("The ship was successfully placed on the map.", 200)
 
 
 @app.route('/shoot', methods=['GET', 'POST'])
@@ -61,39 +58,35 @@ def shoot():
     """
     Handle request to shoot a ship on the map.
     """
-    x = int(request.form['x'])
-    y = int(request.form['y'])
-
-    if Global.board.has_ship(x, y):
-        Global.board.sink_ship(x, y)
-        return make_response("Hit", 200)
-    else:
-        return make_response("Miss", 200)
+    try:
+        x = int(request.form['x'])
+        y = int(request.form['y'])
+        if Global.board.has_ship(x, y):
+            Global.board.sink_ship(x, y)
+            if Global.board.numOfShips is 0:
+                return make_response(jsonify({'result': 'Victory'}), 200)
+            else:
+                return make_response(jsonify({'result': 'Hit'}), 200)
+        else:
+            if Global.board.numOfShips is 0:
+                return make_response(jsonify({'result': 'No ship on board'}), 200)
+            else:
+                return make_response(jsonify({'result': 'Miss'}), 200)
+    except IndexError:
+        return Error(Error.ERR_INVALID_LOC).create_response()
+    except:
+        return Error(Error.ERR_OTHER, 'A generic error occurred').create_response()
 
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
     _init_board()
-    _init_ships()
     shoot_form = ShootForm(request.form)
     ship_form = ShipForm(request.form)
-    print "Game starts...."
-    # print shoot_form.errors
-    # print ship_form.errors
-    # if request.method == 'POST':
-    #     name=request.form['name']
-    #     print name
-    #
-    #     if shoot_form.validate():
-    #         # Save the comment here.
-    #         flash('Hello ' + name)
-    #     else:
-    #         flash('All the form fields are required. ')
-
     return render_template('game.html', shoot=shoot_form, ship=ship_form)
 
 if __name__ == '__main__':
 
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 

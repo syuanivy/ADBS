@@ -48,38 +48,11 @@
             drawBoard();
         </script>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message[1] }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+
         <div class = "row">
-            <div class="col-xs-6">
-                <form action="/shoot" method="post" name ="shoot">
-                    {{ shoot.csrf }}
-
-                    <div class="input text">
-                        {{ shoot.x.label }} {{ shoot.x }}
-                    </div>
-
-                    <div class="input text">
-                        {{ shoot.y.label }} {{ shoot.y }}
-                    </div>
-
-                    <div class="input submit">
-                        <input type="submit" value="Shoot" />
-                    </div>
-                </form>
-
-            </div>
 
             <div class="col-xs-6">
-                <form action="/ship" method="post" name = "ship">
-                    {{ ship.csrf }}
+                <form action="/ship" method="post" >
 
                     <div class="input text">
                         {{ ship.x.label }} {{ ship.x }}
@@ -101,6 +74,24 @@
                         <input type="submit" value="Ship" />
                     </div>
                 </form>
+            </div>
+
+            <div class="col-xs-6">
+
+                <form action="/shoot" method="post" >
+
+                     <div class="input text" >
+                        {{ shoot.x.label }} {{ shoot.x }}
+                    </div>
+
+                    <div class="input text" >
+                        {{ shoot.y.label }} {{ shoot.y }}
+                    </div>
+                    <div class="input submit">
+                        <input type="submit" value="Shoot" />
+                    </div>
+                </form>
+
             </div>
         </div>
 
